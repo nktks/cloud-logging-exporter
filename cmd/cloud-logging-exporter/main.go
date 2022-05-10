@@ -18,11 +18,12 @@ var (
 	projectID string
 	// logging filter is
 	// logName="projects/$projectID/logs/$logName"
-	logName     string
-	file        string
-	severity    string
-	exportSaved bool
-	touch       bool
+	logName       string
+	file          string
+	severity      string
+	exportSaved   bool
+	touch         bool
+	withStdoutLog bool
 )
 
 func init() {
@@ -32,6 +33,7 @@ func init() {
 	flag.StringVar(&severity, "severity", "info", "log severity(default|debug|info|notice|warning|error|critical|alert|emergency)")
 	flag.BoolVar(&exportSaved, "saved", true, "export saved contents of file.")
 	flag.BoolVar(&touch, "touch", false, "touch file if not exists.")
+	flag.BoolVar(&withStdoutLog, "logstdout", false, "whether print log with stdout.")
 	flag.Parse()
 }
 
@@ -74,6 +76,9 @@ func main() {
 		go func() {
 			for stdin.Scan() {
 				logger.Print(stdin.Text())
+				if withStdoutLog {
+					log.Print(stdin.Text())
+				}
 			}
 		}()
 	} else {
@@ -97,7 +102,9 @@ func main() {
 		}
 		if exportSaved && newFile {
 			logger.Print(string(b))
-			log.Print(string(b))
+			if withStdoutLog {
+				log.Print(string(b))
+			}
 		}
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
@@ -118,7 +125,9 @@ func main() {
 							log.Fatal(err)
 						}
 						logger.Print(string(bt))
-						log.Print(string(bt))
+						if withStdoutLog {
+							log.Print(string(bt))
+						}
 					}
 				case err, ok := <-watcher.Errors:
 					if !ok {
