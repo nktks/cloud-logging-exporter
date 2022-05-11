@@ -14,10 +14,12 @@ Usage of ./cloud-logging-exporter:
     	target file path for export
   -logname string
     	log name for Cloud Logging (default "cloud-logging-exporter")
+  -logstdout
+    	whether print log with stdout.
   -project string
     	GCP project
   -saved
-    	export saved contents of file. (default true)
+    	export saved contents of file.
   -severity string
     	log severity(default|debug|info|notice|warning|error|critical|alert|emergency) (default "info")
   -touch
