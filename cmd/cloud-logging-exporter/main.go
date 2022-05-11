@@ -56,7 +56,7 @@ func main() {
 	}
 	var a agent.Agent
 	if file == "" {
-		a = agent.NewStdinAgent(exporter)
+		a = agent.NewReaderAgent(os.Stdin, exporter)
 	} else {
 		fp, err := os.Open(file)
 		newFile := false

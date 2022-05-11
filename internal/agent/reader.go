@@ -2,23 +2,23 @@ package agent
 
 import (
 	"bufio"
-	"os"
+	"io"
 
 	"github.com/nakatamixi/cloud-logging-exporter/internal/exporter"
 )
 
-type stdinAgent struct {
+type readerAgent struct {
 	scanner  *bufio.Scanner
 	exporter *exporter.Exporter
 }
 
-func NewStdinAgent(exporter *exporter.Exporter) Agent {
-	return &stdinAgent{
-		scanner:  bufio.NewScanner(os.Stdin),
+func NewReaderAgent(r io.Reader, exporter *exporter.Exporter) Agent {
+	return &readerAgent{
+		scanner:  bufio.NewScanner(r),
 		exporter: exporter,
 	}
 }
-func (a *stdinAgent) Run() error {
+func (a *readerAgent) Run() error {
 	for a.scanner.Scan() {
 		a.exporter.Export(a.scanner.Text())
 	}
