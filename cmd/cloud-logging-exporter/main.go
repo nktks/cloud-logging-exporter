@@ -31,7 +31,7 @@ func init() {
 	flag.StringVar(&logName, "logname", "cloud-logging-exporter", "log name for Cloud Logging")
 	flag.StringVar(&file, "file", "", "target file path for export")
 	flag.StringVar(&severity, "severity", "info", "log severity(default|debug|info|notice|warning|error|critical|alert|emergency)")
-	flag.BoolVar(&exportSaved, "saved", true, "export saved contents of file.")
+	flag.BoolVar(&exportSaved, "saved", false, "export saved contents of file.")
 	flag.BoolVar(&touch, "touch", false, "touch file if not exists.")
 	flag.BoolVar(&withStdoutLog, "logstdout", false, "whether print log with stdout.")
 	flag.Parse()
@@ -77,11 +77,12 @@ func main() {
 			log.Fatal(err)
 		}
 		defer watcher.Close()
-		if err := watcher.Add(file); err != nil {
+
+		fa, err := agent.NewFileAgent(watcher, fp, exporter, exportSaved && !newFile)
+		if err != nil {
 			log.Fatal(err)
 		}
-
-		a = agent.NewFileAgent(watcher, fp, exporter, exportSaved && !newFile)
+		a = fa
 	}
 	go func() {
 		if err := a.Run(); err != nil {

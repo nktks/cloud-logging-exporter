@@ -16,13 +16,16 @@ type fileAgent struct {
 	exportSaved bool
 }
 
-func NewFileAgent(watcher *fsnotify.Watcher, fp *os.File, exporter *exporter.Exporter, exportSaved bool) Agent {
+func NewFileAgent(watcher *fsnotify.Watcher, fp *os.File, exporter *exporter.Exporter, exportSaved bool) (Agent, error) {
+	if err := watcher.Add(fp.Name()); err != nil {
+		return nil, err
+	}
 	return &fileAgent{
 		watcher:     watcher,
 		fp:          fp,
 		exporter:    exporter,
 		exportSaved: exportSaved,
-	}
+	}, nil
 }
 
 func (a *fileAgent) Run() error {
