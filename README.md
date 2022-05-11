@@ -1,5 +1,5 @@
 # cloud-logging-exporter
-`cloud-logging-exporter` is a command line tool to export file or stdin contents to Cloud Logging.
+`cloud-logging-exporter` is a command line agent tool to export file or stdin contents to Cloud Logging.
 
 # Install
 ```
