@@ -2,25 +2,28 @@ package agent
 
 import (
 	"bufio"
+	"context"
 	"io"
-
-	"github.com/nakatamixi/cloud-logging-exporter/internal/exporter"
 )
 
 type readerAgent struct {
 	scanner  *bufio.Scanner
-	exporter *exporter.Exporter
+	exporter io.Writer
 }
 
-func NewReaderAgent(r io.Reader, exporter *exporter.Exporter) Agent {
+func NewReaderAgent(r io.Reader, exporter io.Writer) Agent {
 	return &readerAgent{
 		scanner:  bufio.NewScanner(r),
 		exporter: exporter,
 	}
 }
-func (a *readerAgent) Run() error {
+
+// currently, we do not use ctx in this func because Scan run loop internaly until buffer found.
+func (a *readerAgent) Run(ctx context.Context) error {
 	for a.scanner.Scan() {
-		a.exporter.Export(a.scanner.Text())
+		if _, err := a.exporter.Write(a.scanner.Bytes()); err != nil {
+			return err
+		}
 	}
 	return nil
 }

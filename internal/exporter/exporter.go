@@ -43,9 +43,12 @@ func NewExporter(client *logging.Client, withStdout bool, logName, severity stri
 	}, nil
 }
 
-func (e *Exporter) Export(s string) {
+// implements io.Writer
+func (e *Exporter) Write(p []byte) (n int, err error) {
+	s := string(p)
 	e.logger.Print(s)
 	if e.withStdout {
 		log.Print(s)
 	}
+	return len(p), nil
 }

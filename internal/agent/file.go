@@ -1,22 +1,23 @@
 package agent
 
 import (
+	"context"
+	"fmt"
 	"io"
 	"log"
 	"os"
 
 	"github.com/fsnotify/fsnotify"
-	"github.com/nakatamixi/cloud-logging-exporter/internal/exporter"
 )
 
 type fileAgent struct {
 	watcher     *fsnotify.Watcher
 	fp          *os.File
-	exporter    *exporter.Exporter
+	exporter    io.Writer
 	exportSaved bool
 }
 
-func NewFileAgent(watcher *fsnotify.Watcher, fp *os.File, exporter *exporter.Exporter, exportSaved bool) (Agent, error) {
+func NewFileAgent(watcher *fsnotify.Watcher, fp *os.File, exporter io.Writer, exportSaved bool) (Agent, error) {
 	if err := watcher.Add(fp.Name()); err != nil {
 		return nil, err
 	}
@@ -28,16 +29,20 @@ func NewFileAgent(watcher *fsnotify.Watcher, fp *os.File, exporter *exporter.Exp
 	}, nil
 }
 
-func (a *fileAgent) Run() error {
+func (a *fileAgent) Run(ctx context.Context) error {
 	b, err := io.ReadAll(a.fp)
 	if err != nil {
 		return err
 	}
 	if a.exportSaved {
-		a.exporter.Export(string(b))
+		if _, err := a.exporter.Write(b); err != nil {
+			return err
+		}
 	}
 	for {
 		select {
+		case <-ctx.Done():
+			return nil
 		case event, ok := <-a.watcher.Events:
 			if !ok {
 				return nil
@@ -47,7 +52,12 @@ func (a *fileAgent) Run() error {
 				if err != nil {
 					return err
 				}
-				a.exporter.Export(string(b))
+				if _, err := a.exporter.Write(b); err != nil {
+					return err
+				}
+			}
+			if event.Op&fsnotify.Remove == fsnotify.Remove || event.Op&fsnotify.Rename == fsnotify.Rename {
+				return fmt.Errorf("file is removed or renamed or initialized. event: %s", event)
 			}
 		case err, ok := <-a.watcher.Errors:
 			if !ok {

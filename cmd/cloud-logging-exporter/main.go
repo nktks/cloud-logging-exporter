@@ -85,7 +85,7 @@ func main() {
 		a = fa
 	}
 	go func() {
-		if err := a.Run(); err != nil {
+		if err := a.Run(ctx); err != nil {
 			log.Fatal(err)
 		}
 	}()

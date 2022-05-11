@@ -1,5 +1,7 @@
 package agent
 
+import "context"
+
 type Agent interface {
-	Run() error
+	Run(context.Context) error
 }
