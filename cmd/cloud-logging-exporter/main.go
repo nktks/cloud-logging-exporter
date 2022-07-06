@@ -10,8 +10,8 @@ import (
 
 	"cloud.google.com/go/logging"
 	"github.com/fsnotify/fsnotify"
-	"github.com/nakatamixi/cloud-logging-exporter/internal/agent"
-	"github.com/nakatamixi/cloud-logging-exporter/internal/exporter"
+	"github.com/nktks/cloud-logging-exporter/internal/agent"
+	"github.com/nktks/cloud-logging-exporter/internal/exporter"
 )
 
 var (

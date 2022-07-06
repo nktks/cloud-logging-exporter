@@ -7,7 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/nakatamixi/cloud-logging-exporter/internal/agent"
+	"github.com/nktks/cloud-logging-exporter/internal/agent"
 )
 
 func TestReaderAgent_Run(t *testing.T) {

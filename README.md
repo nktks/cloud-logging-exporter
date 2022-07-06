@@ -3,7 +3,7 @@
 
 # Install
 ```
-go install github.com/nakatamixi/cloud-logging-exporter/cmd/cloud-logging-exporter@latest
+go install github.com/nktks/cloud-logging-exporter/cmd/cloud-logging-exporter@latest
 ```
 
 # Usage

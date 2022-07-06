@@ -1,4 +1,4 @@
-module github.com/nakatamixi/cloud-logging-exporter
+module github.com/nktks/cloud-logging-exporter
 
 go 1.17
 
